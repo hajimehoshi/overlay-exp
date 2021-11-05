@@ -12,12 +12,9 @@ import (
 // which prevents us from allocating more stack.
 //go:nosplit
 func sysAlloc(n uintptr, sysStat *sysMemStat) unsafe.Pointer {
-	v, err := mmap(nil, n, _PROT_READ|_PROT_WRITE, _MAP_ANON|_MAP_PRIVATE, -1, 0)
-	if err != 0 {
-		return nil
-	}
-	sysStat.add(int64(n))
-	return v
+	p := sysReserve(nil, n)
+	sysMap(p, n, sysStat)
+	return p
 }
 
 func sysUnused(v unsafe.Pointer, n uintptr) {
@@ -34,7 +31,6 @@ func sysHugePage(v unsafe.Pointer, n uintptr) {
 //go:nosplit
 func sysFree(v unsafe.Pointer, n uintptr, sysStat *sysMemStat) {
 	sysStat.add(-int64(n))
-	munmap(v, n)
 }
 
 func sysFault(v unsafe.Pointer, n uintptr) {
