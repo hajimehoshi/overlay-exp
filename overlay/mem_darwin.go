@@ -40,11 +40,7 @@ func sysReserve(v unsafe.Pointer, n uintptr) unsafe.Pointer {
 	if v != nil {
 		return nil
 	}
-	p, err := mmap(nil, n, _PROT_READ|_PROT_WRITE, _MAP_ANON|_MAP_PRIVATE, -1, 0)
-	if err != 0 {
-		return nil
-	}
-	return p
+	return malloc(n)
 }
 
 const _ENOMEM = 12
