@@ -841,8 +841,9 @@ TEXT runtime·syscallNoErr(SB),NOSPLIT,$0
 	RET
 
 TEXT runtime·malloc_trampoline(SB),NOSPLIT,$0
-	PUSHQ	BP			// make a frame; keep stack aligned
+	PUSHQ	BP
 	MOVQ	SP, BP
+	MOVQ	DI, BX
 	MOVQ	0(BX), DI		// arg 1 size
 	CALL	libc_malloc(SB)
 	MOVQ	AX, 8(BX)
